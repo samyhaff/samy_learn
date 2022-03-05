@@ -1,6 +1,8 @@
 from copy import deepcopy
 import numpy as np
 
+# TODO:Add classification metrics
+
 
 def sigmoid(x):
     """Sigmoid function"""
@@ -116,9 +118,16 @@ class LogisticRegression:
         start = np.zeros(X.shape[1] + 1)
         self.w = gradient_descent(lambda x: -self.gradient(x, X, y), start)
 
-    def predict(self, X):
+    def predict_proba(self, X):
+        """returns predicted probabilities"""
         if self.w is None:
             raise Exception("The model is not fitted")
         X = deepcopy(X)
         X = np.c_[X, np.ones(X.shape[0])]
-        return (sigmoid(X @ self.w) >= 0.5).astype("int")
+        return sigmoid(X @ self.w)
+
+    def predict(self, X, threshold=0.5):
+        """return prediction"""
+        if self.w is None:
+            raise Exception("The model is not fitted")
+        return (self.predict_proba(X) >= threshold).astype('int')
