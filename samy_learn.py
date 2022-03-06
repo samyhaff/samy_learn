@@ -1,8 +1,6 @@
 from copy import deepcopy
 import numpy as np
 
-# TODO:Add classification metrics
-
 
 def sigmoid(x):
     """Sigmoid function"""
@@ -130,4 +128,54 @@ class LogisticRegression:
         """return prediction"""
         if self.w is None:
             raise Exception("The model is not fitted")
-        return (self.predict_proba(X) >= threshold).astype('int')
+        return (self.predict_proba(X) >= threshold).astype("int")
+
+
+class KMeans:
+    """K-means clustering model"""
+
+    def __init__(self, n_clusters):
+        self.n_clusters = n_clusters
+        self.labels = None
+        self.centroids = None
+
+    @staticmethod
+    def cluster(X, centroids):
+        """cluster according to centroids"""
+        vectors = [[x - centroid for centroid in centroids] for x in X]
+        distances = [[np.linalg.norm(v) for v in vector] for vector in vectors]
+        labels = np.argmin(distances, axis=1)
+        return labels
+
+    @staticmethod
+    def update_centroids(X, labels):
+        """update centroids according to current labels"""
+        centroids = np.array([np.mean(X[labels == label], axis=0) for label in labels])
+        return centroids
+
+    def fit(self, X):
+        """fit the model"""
+        n_samples, _ = X.shape
+
+        # generate random centroids
+        rng = np.random.default_rng()
+        idx = rng.choice(n_samples, size=self.n_clusters, replace=False)
+        centroids = X[idx, :]
+
+        labels_old = None
+        labels = self.cluster(X, centroids)
+        print(labels)
+
+        while np.all(labels != labels_old):
+            labels_old = deepcopy(labels)
+            centroids = self.update_centroids(X, labels)
+            labels = self.cluster(X, centroids)
+
+        self.labels = labels
+        self.centroids = centroids
+
+    def predict(self, X):
+        """predict labels"""
+        if self.labels is None:
+            raise Exception("The model is not fitted")
+        return self.cluster(X, self.centroids)
