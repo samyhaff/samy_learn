@@ -7,6 +7,7 @@
 * Linear Regression (OLS + gradient descent)
 * Ridge Regression
 * Logistic Regression
+* KNN
 
 ### Unsupervised
 
@@ -14,7 +15,8 @@
 
 ## TODO
 
+* PCA
 * classification metrics
-* K nearest
+* SVM
 * Decision Trees
 * Neural Networks

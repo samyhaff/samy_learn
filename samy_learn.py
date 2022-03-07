@@ -29,6 +29,7 @@ class LinearRegression:
     """Linear Regression model"""
 
     def __init__(self):
+        """constructor"""
         self.w = None
 
     def fit(self, X, y):
@@ -50,6 +51,7 @@ class GDRegressor:
     """Gradient Dezcent Linear Regression model"""
 
     def __init__(self):
+        """constructor"""
         self.w = None
 
     def gradient(self, x, X, y):
@@ -76,6 +78,7 @@ class Ridge:
     """Ridge Regression model"""
 
     def __init__(self, alpha=1.0):
+        """constructor"""
         self.w = None
         self.alpha = alpha
 
@@ -103,6 +106,7 @@ class LogisticRegression:
     """Logistic Regression model"""
 
     def __init__(self):
+        """constructor"""
         self.w = None
 
     def gradient(self, x, X, y):
@@ -135,6 +139,7 @@ class KMeans:
     """K-means clustering model"""
 
     def __init__(self, n_clusters):
+        """constructor"""
         self.n_clusters = n_clusters
         self.labels = None
         self.centroids = None
@@ -179,3 +184,29 @@ class KMeans:
         if self.labels is None:
             raise Exception("The model is not fitted")
         return self.cluster(X, self.centroids)
+
+class KNeighborsClassifier:
+    """K Nearest Neighbors Classification Model"""
+
+    def __init__(self, n_neighbors):
+        """constructor"""
+        self.n_neighbors = n_neighbors
+        self.X_train = None
+        self.y_train = None
+
+    def fit(self, X, y):
+        """fit the model"""
+        self.X_train = X
+        self.y_train = y
+
+    def predict(self, X):
+        """predicts classes using the fitted model"""
+        if self.X_train is None:
+            raise Exception("The model is not fitted")
+
+        distances = [[np.linalg.norm(x - x_train) for x_train in self.X_train] for x in X]
+        smallest_distances = np.argsort(distances, axis=1)[:, :self.n_neighbors]
+        labels = [self.y_train[d] for d in smallest_distances]
+        y = [np.bincount(label_list).argmax() for label_list in labels]
+
+        return y
