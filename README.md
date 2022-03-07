@@ -1,5 +1,7 @@
 # A Machine Learning Library written from scratch
 
+Machine learning models or concepts written from scratch.
+
 ## Implemented Models
 
 ### Supervised
@@ -16,7 +18,8 @@
 ## TODO
 
 * PCA
-* classification metrics
+* Stochastic Gradient Descent
+* Classification metrics
 * SVM
 * Decision Trees
 * Neural Networks
