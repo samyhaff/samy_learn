@@ -1,3 +1,4 @@
+import warnings
 from copy import deepcopy
 import numpy as np
 
@@ -13,15 +14,16 @@ def mse(y_hat, y):
 
 
 def gradient_descent(
-    gradient, start, learning_rate=1e-03, iter_max=100, tolerance=1e-07
+    gradient, start, learning_rate=1e-02, iter_max=5000, tolerance=1e-04
 ):
     """Gradient Descent algorithm"""
     x = start
     for _ in range(iter_max):
         diff = learning_rate * gradient(x)
         if np.max(abs(diff)) < tolerance:
-            break
+            return x
         x -= diff
+    warnings.warn("Gradient Descent reached max number of iterations")
     return x
 
 
@@ -59,6 +61,36 @@ class GDRegressor:
         X = deepcopy(X)
         X = np.c_[X, np.ones(X.shape[0])]
         return 2 * X.T @ (X @ x - y)
+
+    def fit(self, X, y):
+        """fit the model using OLS"""
+        start = np.zeros(X.shape[1] + 1)
+        self.w = gradient_descent(lambda x: self.gradient(x, X, y), start)
+
+    def predict(self, X):
+        """make a prediction using a fitted model"""
+        if self.w is None:
+            raise Exception("The model is not fitted")
+        X = deepcopy(X)
+        X = np.c_[X, np.ones(X.shape[0])]
+        return X @ self.w
+
+
+class SGDRegressor:
+    """Stochastic Gradient Dezcent Linear Regression model"""
+
+    def __init__(self):
+        """constructor"""
+        self.w = None
+
+    def gradient(self, x, X, y):
+        """stochastic gradient"""
+        n_features = X.shape[0]
+        idx = np.random.choice(np.arange(n_features))
+        X_ = X[idx, :]
+        y_ = y[idx]
+        X_ = np.c_[X_, 1]
+        return 2 * X_.T @ (X_ @ x - y_)
 
     def fit(self, X, y):
         """fit the model using OLS"""
@@ -169,7 +201,6 @@ class KMeans:
 
         labels_old = None
         labels = self.cluster(X, centroids)
-        print(labels)
 
         while np.all(labels != labels_old):
             labels_old = deepcopy(labels)
@@ -184,6 +215,7 @@ class KMeans:
         if self.labels is None:
             raise Exception("The model is not fitted")
         return self.cluster(X, self.centroids)
+
 
 class KNeighborsClassifier:
     """K Nearest Neighbors Classification Model"""
@@ -204,8 +236,10 @@ class KNeighborsClassifier:
         if self.X_train is None:
             raise Exception("The model is not fitted")
 
-        distances = [[np.linalg.norm(x - x_train) for x_train in self.X_train] for x in X]
-        smallest_distances = np.argsort(distances, axis=1)[:, :self.n_neighbors]
+        distances = [
+            [np.linalg.norm(x - x_train) for x_train in self.X_train] for x in X
+        ]
+        smallest_distances = np.argsort(distances, axis=1)[:, : self.n_neighbors]
         labels = [self.y_train[d] for d in smallest_distances]
         y = [np.bincount(label_list).argmax() for label_list in labels]
 

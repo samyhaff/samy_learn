@@ -4,9 +4,14 @@ Machine learning models or concepts written from scratch.
 
 ## Implemented Models
 
+### Algorithms
+
 ### Supervised
 
-* Linear Regression (OLS + gradient descent)
+* Linear Regression
+    * OLS
+    * Gradient Descent
+    * Stochastic Gradient Descent
 * Ridge Regression
 * Logistic Regression
 * KNN
@@ -17,8 +22,6 @@ Machine learning models or concepts written from scratch.
 
 ## TODO
 
-* PCA
-* Stochastic Gradient Descent
 * Classification metrics
 * SVM
 * Decision Trees
